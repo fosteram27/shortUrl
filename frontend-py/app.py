@@ -12,25 +12,6 @@ def index():
 def about():
     return render_template('about.html')
 
-@app.route('/url')
-def url():
-    result = ""
-    status="Short_URL_Test"
-    return render_template('url.html', status=status, result=result)
-
-@app.route('/url', methods=['POST'])
-def url_post():
-
-    status = "processing..."
-    text = request.form['urlLong']
-    # post to server
-    id = random.randint(1,100)
-    idText = str(id)
-    post = requests.post("http://localhost:8080/entries", json={"urlLong":text, "id":idText})
-    urlShort = str(post.content.decode())
-
-    return render_template('url.html', status=status, urlShort=urlShort)
-
 @app.route('/shortUrl')
 def shortUrl():
     r = requests.get('http://localhost:8080/entries')
@@ -45,10 +26,18 @@ def longUrl():
 @app.route('/longUrl', methods=['POST'])
 def longUrl_post():
 
-    # get URL to shorten from form
-    text = request.form['urlLong']
+    status = "processing..."
+    text = request.form['text']
     # post to server
-    post = requests.post("http://localhost:8080/entries", json={"urlLong":text})
-    urlShort = str(post.content.decode())
+    id = random.randint(1,100)
+    idText = str(id)
+    post = requests.post("http://localhost:8080/entries", json={"urlLong":text, "id":idText})
 
-    return render_template('shortUrl.html', urlShort=urlShort)
+    # fieldId = 'entry' + idText
+    getText = 'http://localhost:8080/entries/' + 'entry' + idText
+    # getText = 'http://localhost:8080/entries/' + fieldId
+     
+    r = requests.get(getText)
+    
+    itemText = r.json()
+    return render_template('shortUrl.html', status=status, result=itemText)
