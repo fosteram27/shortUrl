@@ -2,6 +2,8 @@ package main
 
 import (
 	"api-go/urls"
+	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"net/http"
 	"regexp"
@@ -56,6 +58,8 @@ func (h *EntriesHandler) CreateEntry(w http.ResponseWriter, r *http.Request) {
 	//TODO: Modify later, need to figure out how to ID entries. longUrl?
 	resourceID := "entry" + slug.Make(entry.Id)
 
+	//Add correct short URL
+	entry.UrlShort = shortenUrl(entry.UrlLong)
 	err = h.store.Add(resourceID, entry)
 	if err != nil {
 		InternalServerErrorHandler(w, r)
@@ -210,4 +214,15 @@ func main() {
 	// Run the server
 	http.ListenAndServe(":8080", mux)
 
+}
+
+func shortenUrl(urlLong string) string {
+
+	url_base := "bit.ly/"
+	numChars := 5
+
+	//TODO add timestamp before hashing to increase uniqueness of entries
+	urlLongHash := md5.Sum([]byte(urlLong))
+	urlShort := url_base + hex.EncodeToString(urlLongHash[:])[:numChars]
+	return urlShort
 }
