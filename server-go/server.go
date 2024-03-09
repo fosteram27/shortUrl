@@ -7,8 +7,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"regexp"
-
-	"github.com/gosimple/slug"
 )
 
 // REGEX for validating inputs
@@ -27,11 +25,27 @@ type entryStore interface {
 	Remove(name string) error
 }
 
+type entryDb interface {
+	Add(name string, entry urls.UrlEntry) error
+	Get(name string) (urls.UrlEntry, error)
+	Update(name string, entry urls.UrlEntry) error
+	List() (map[string]urls.UrlEntry, error)
+	Remove(name string) error
+}
+
 type homeHandler struct{}
 
 func (h *homeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("This is my home page"))
 }
+
+// type shortUrlHandler struct{}
+
+// func (h *shortUrlHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+// 	// look up longUrl from shortUrl
+// 	http.Redirect(w, r, "https://google.com", http.StatusSeeOther)
+
+// }
 
 type EntriesHandler struct {
 	store entryStore
@@ -45,28 +59,26 @@ func NewEntriesHandler(s entryStore) *EntriesHandler {
 
 func (h *EntriesHandler) CreateEntry(w http.ResponseWriter, r *http.Request) {
 	var entry urls.UrlEntry
-	//entry = urls.UrlEntry{Id: "1", UrlLong: "www.google.com", UrlShort: "bit.ly/7thyF", Date: "2024-02-20"}
 
-	//	err := json.NewDecoder(r.Body).Decode(&entry)
 	err := json.NewDecoder(r.Body).Decode(&entry)
-
 	if err != nil {
 		InternalServerErrorHandler(w, r)
 		return
 	}
 
-	//TODO: Modify later, need to figure out how to ID entries. longUrl?
-	resourceID := "entry" + slug.Make(entry.Id)
-
 	//Add correct short URL
 	entry.UrlShort = shortenUrl(entry.UrlLong)
+
+	//TODO: Modify later, need to figure out how to ID entries. longUrl?
+	resourceID := entry.UrlShort
+
 	err = h.store.Add(resourceID, entry)
 	if err != nil {
 		InternalServerErrorHandler(w, r)
 		return
 	}
-
-	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(entry.UrlShort))
+	// w.WriteHeader(http.StatusOK)
 }
 
 func (h *EntriesHandler) ListEntries(w http.ResponseWriter, r *http.Request) {
@@ -210,6 +222,7 @@ func main() {
 	mux.Handle("/", &homeHandler{})
 	mux.Handle("/entries", entriesHandler)
 	mux.Handle("/entries/", entriesHandler)
+	// mux.Handle("/0a137", &shortUrlHandler{})
 
 	// Run the server
 	http.ListenAndServe(":8080", mux)
