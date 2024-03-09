@@ -1,30 +1,17 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>{% block title %} Welcome to the URL Shortener{% endblock %}</h1>
+    <h1>{% block title %} Here are your short URL results{% endblock %}</h1>
     <table id="data" class="table table-striped">
 
         <thead>
           <tr>
               <th>Shortened URL</th>
           </tr>
-        </thead>
-        
-        <div>
-            Status: {{status}}
-        </div>
-
-        <!-- <tbody>
-          {% for key, value in result.items() %}
-            <tr>
-              <td> {{ value }} </td>
-              <td> {{ result.url }} </td>
-            </tr>
-          {% endfor %} -->
-      
+        </thead>  
           <tbody>
                 <tr>
-                  <td> {{ result.urlShort }} </td>
+                  <td> {{urlShort}} </td>
                 </tr>
               
       </table>
