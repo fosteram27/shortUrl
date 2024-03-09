@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Here are your short URL results{% endblock %}</h1>
+    <table id="data" class="table table-striped">
+
+        <thead>
+          <tr>
+              <th>Shortened URL</th>
+          </tr>
+        </thead>  
+          <tbody>
+                <tr>
+                  <td> {{urlShort}} </td>
+                </tr>
+              
+      </table>
+{% endblock %}

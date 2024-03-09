@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Welcome to the URL Shortener{% endblock %}</h1>
+      <h2></h2>  
+    <form method="POST">
+      <label for="url">Enter url to shorten:</label>
+      <input name="urlLong">
+      <input type="submit">
+      </form>    
+{% endblock %}
