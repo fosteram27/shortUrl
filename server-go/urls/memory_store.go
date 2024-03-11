@@ -35,16 +35,6 @@ func (m MemStore) List() (map[string]UrlEntry, error) {
 	return m.list, nil
 }
 
-func (m MemStore) Update(name string, urlEntry UrlEntry) error {
-
-	if _, ok := m.list[name]; ok {
-		m.list[name] = urlEntry
-		return nil
-	}
-
-	return ErrNotFound
-}
-
 func (m MemStore) Remove(name string) error {
 	delete(m.list, name)
 	return nil
